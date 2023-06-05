@@ -13,6 +13,8 @@ class TicketController extends Controller
     public function index()
     {
         //
+        $tickets = Ticket::all();
+        return response()->json($tickets);
     }
 
     /**
@@ -29,6 +31,19 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         //
+        $ticket = new Ticket;
+        $ticket->project_id = $request->project_id;
+        $ticket->name = $request->name;
+        $ticket->description = $request->description;
+        $ticket->status = $request->status;
+        $ticket->dead_line = $request->dead_line;
+        $ticket->save();
+        $data = [
+            'message' => 'Ticket created succesfuly',
+            'ticket' => $ticket
+        ];
+        return response()->json($data);
+
     }
 
     /**
@@ -37,6 +52,12 @@ class TicketController extends Controller
     public function show(Ticket $ticket)
     {
         //
+        $data = [
+            'message' => 'Ticket details',
+            'ticket' => $ticket,
+            'project' => $ticket->projects
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -53,6 +74,13 @@ class TicketController extends Controller
     public function update(Request $request, Ticket $ticket)
     {
         //
+        $ticket->status = $request->status;
+        $ticket->save();
+        $data = [
+            'message' => 'Ticket updated successfully',
+            'ticket' => $ticket
+        ];
+        return response()->json($data);
     }
 
     /**

@@ -14,7 +14,17 @@ class ClientController extends Controller
     {
         //
         $clients = Client::all();
-        return response()->json($clients);
+        $array = [];
+        foreach ($clients as $client) {
+            $array[] = [
+                'id' => $client->id,
+                'first_name' => $client->first_name,
+                'last_name' => $client->last_name,
+                'username' => $client->username,
+                'projects' => $client->projects,
+            ];
+        }
+        return response()->json($array);
     }
 
     /**
@@ -31,6 +41,17 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         //
+        $client = new Client;
+        $client->first_name = $request->first_name;
+        $client->last_name = $request->last_name;
+        $client->username = $request->username;
+        $client->password = $request->password;
+        $client->save();
+        $data = [
+            'message' => 'Client created succesfully',
+            'client' => $client
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -39,6 +60,12 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         //
+        $data = [
+            'message' => 'Client details',
+            'client' => $client,
+            'projects' => $client->projects
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -55,6 +82,15 @@ class ClientController extends Controller
     public function update(Request $request, Client $client)
     {
         //
+        $client->first_name = $request->first_name;
+        $client->last_name = $request->last_name;
+        $client->username = $request->username;
+        $client->save();
+        $data = [
+            'message' => 'Client updated succesfully',
+            'client' => $client
+        ];
+        return response()->json($data);
     }
 
     /**
@@ -63,5 +99,21 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         //
+        $client->delete();
+        $data = [
+            'message' => 'Client deleted succesfully',
+            'client' => $client
+        ];
+        return response()->json($data);
+    }
+
+    public function attach(Request $request) {
+        $client = Client::find($request->client_id);
+        $client->projects()->attach($request->project_id);
+        $data = [
+            'message' => 'Project attached successfully',
+            'client' => $client
+        ];
+        return response()->json($data);
     }
 }
